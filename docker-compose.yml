@@ -11,6 +11,8 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    networks:
+      - backend
 
   cmsmadesimple:
     container_name: cmsmadesimple
@@ -19,6 +21,8 @@ services:
       - "8000:8000"
     depends_on:
       - mysqlcms
+    networks:
+      - backend
 
   vitrine:
     container_name: vitrine
@@ -28,6 +32,8 @@ services:
       NODE_ENV: production
     ports:
       - "10000:10000"
+    networks:
+      - backend
 
   reverse-proxy:
     image: nginx:latest
@@ -38,6 +44,15 @@ services:
     depends_on:
       - cmsmadesimple
       - vitrine
+    networks:
+      - frontend
+      - backend
 
 volumes:
   mysql-data:
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge

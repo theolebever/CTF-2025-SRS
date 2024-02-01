@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  mysqlcms:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  cmsmadesimple:
+    container_name: cmsmadesimple
+    build: CMSmadesimple/.
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysqlcms
+
+  vitrine:
+    container_name: vitrine
+    build:
+      context: vitrine/.
+    environment:
+      NODE_ENV: production
+    ports:
+      - "10000:10000"
+
+  reverse-proxy:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./reverse-proxy/reverse-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - cmsmadesimple
+      - vitrine
+
+volumes:
+  mysql-data:

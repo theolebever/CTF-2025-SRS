@@ -1,2 +1,4 @@
 User-agent: *
 Disallow: 
+
+CTF2025{D4fT_PuNK_F0r_3V3R}

@@ -1,14 +1,12 @@
 version: "3.8"
 services:
   mysqlcms:
-    image: mysql:latest
+    image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: mydatabase
       MYSQL_USER: myuser
       MYSQL_PASSWORD: mypassword
-    ports:
-      - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -23,6 +21,8 @@ services:
       - mysqlcms
     networks:
       - backend
+    links:
+      - mysqlcms:mysql
 
   vitrine:
     container_name: vitrine

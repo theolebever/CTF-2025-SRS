@@ -38,6 +38,9 @@ FROM nginx as final
 # Copy configuration for nginx.
 COPY nginx.conf /etc/nginx/nginx.conf
 
+# Copy the robots.txt file.
+COPY robots.txt /usr/share/nginx/html/robots.txt
+
 # Copy the built website to the nginx image.
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 

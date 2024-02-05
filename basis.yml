@@ -1,0 +1,8 @@
+---
+- name: Set up the basis
+  hosts: hosts
+  become: true
+  remote_user: root
+  roles:
+    - common
+    - user_management

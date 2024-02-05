@@ -1,0 +1,7 @@
+---
+- name: Hosting websites
+  hosts: hosts
+  become: true
+  remote_user: root
+  roles:
+    - webserver

@@ -1,0 +1,8 @@
+---
+- name: Securing playbook
+  hosts: hosts
+  become: true
+  remote_user: root
+  roles:
+    - securing
+    - firewall

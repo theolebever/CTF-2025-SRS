@@ -1,0 +1,18 @@
+---
+
+- name: Set password hashing algorithm to SHA-512
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/common-password
+    regexp: "^password.*pam_unix.so"
+    line: "password [success=1 default=ignore] pam_unix.so obscure sha512"
+
+- name: Create user marc
+  ansible.builtin.user:
+    name: marc
+    password: "password"
+    shell: /bin/bash
+
+- name: Let marc use vim as sudo without password
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    line: "marc ALL=(ALL) NOPASSWD: /usr/bin/vim"

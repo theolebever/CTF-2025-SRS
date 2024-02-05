@@ -1,0 +1,10 @@
+---
+packages_to_install:
+  - sudo
+  - vim
+  - git
+  - nftables
+  - python3
+  - python3-venv
+  - virtualenv
+  - curl

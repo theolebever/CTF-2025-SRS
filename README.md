@@ -1,30 +1,48 @@
-<h1 align="center">CTF-2025-SRS 👋</h1>
-<p>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.1-blue.svg?cacheSeconds=2592000" />
-  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-2.0.0-ff69b4" />
-  <img alt="Vue" src="https://img.shields.io/badge/Vue-3.0.0-ff69b4" />
-  <img alt="Node" src="https://img.shields.io/badge/Node-14.17.0-ff69b4" />
-</p>
+# ADLIN TP4 
 
-> This repository consists of a docker-compose file that will allow you to deploy a whole web architecture for the CTF game of the 2025 SRS promotion at EPITA engineering school.
+## Contexte
+Ce dépôt contient un ensemble de playbooks Ansible pour automatiser la configuration et la mise en place d'un serveur web, sécuriser le serveur et configurer le serveur de noms.
 
-## Deploy
+## Playbooks
 
-To instantiate the architecture, you must first clone the repository and then run the following command:
+    - basis.yml : Ce playbook met en place les exigences de base pour le serveur. Il met à jour et met à niveau les paquets, et installe les paquets requis tels que sudo, vim, zsh, git, nftables, nginx, python3, python3-venv, libaugeas0, bind9, bind9-doc et bind9utils.
 
-```sh
-docker compose up
+    - securing.yml : Ce playbook sécurise le serveur en créant un nouvel utilisateur avec des privilèges sudo et en configurant les règles de pare-feu à l'aide de nftables.
+
+    - vitrine.yml : Ce playbook configure le serveur web avec Nginx et obtient un certificat SSL à l'aide de Certbot. Il crée un environnement virtuel Certbot, crée un lien symbolique pour Certbot et active le service Nginx.
+
+    - name-server.yml : Ce playbook configure le serveur de noms à l'aide de Knot DNS. Il crée un fichier de configuration Knot et un fichier de zone pour le domaine.
+
+    - main.yml : Il s'agit du playbook principal qui importe et exécute tous les autres playbooks dans le bon ordre.
+
+## Utilisation
+
+Ces playbooks sont conçus pour être exécutés en remote. Pour ce faire, vous devez d'abord installer Ansible sur votre machine locale. Pour ce faire, exécutez la commande suivante :
+
+```bash
+sudo apt-get install ansible
+```
+Ensuite, il faut installer ce package sur votre machine locale. Pour ce faire, exécutez la commande suivante :
+
+```bash
+ sudo apt-get install sshpass
+```
+Ensuite, il faut configuré le fichier hosts avec l'adresse IP de votre serveur. Pour ce faire, exécutez la commande suivante :
+
+```bash
+echo "[hosts]\n<IP>" > hosts.ini
+```
+Il ne reste plus qu'à cloner ce dépôt et à exécuter le playbook principal avec la commande suivante :
+
+```bash
+ansible-playbook -i hosts.ini main.yml -u root --ask-pass --ask-vault-pass
 ```
 
-It will take a few minutes to download the images and start the containers. Once that's done two websites will be available:
-```
-http://vitrine.srs2025.com
-http://cms.srs2025.com
-```
-To set up the CMSmadesimple, simply follow the instructions on the website: https://docs.cmsmadesimple.org/
+Cela exécutera les playbooks dans l'ordre suivant :
 
+    - Mettre en place la base (basis.yml)
+    - Sécuriser le serveur (securing.yml)
+    - Configurer le serveur web (vitrine.yml)
+    - Configurer le serveur de noms (name-server.yml)
 
-## Author
-
-👤 **Mehdi Fidahoussen / Théo Le Bever / Marius André**
+Après l'exécution des playbooks, votre serveur sera configuré, sécurisé et équipé d'un serveur web et d'un serveur de noms.

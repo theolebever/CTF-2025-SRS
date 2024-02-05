@@ -1,0 +1,28 @@
+#!/usr/sbin/nft -f
+
+	flush ruleset
+
+	table inet filter {
+	chain input {
+		type filter hook input priority filter; policy accept;
+		ip saddr {{ ssh_client_ip }} tcp dport 22 accept
+		icmpv6 type echo-request limit rate 5/second accept
+		ct state established,related accept
+		ct state invalid drop
+		tcp dport 80 accept
+		tcp dport 443 accept
+		tcp dport 8081 accept
+		iif "lo" accept
+		drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy accept;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+
+

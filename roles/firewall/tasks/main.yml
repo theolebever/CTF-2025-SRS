@@ -1,0 +1,23 @@
+---
+- name: Get the SSH client IP address
+  ansible.builtin.shell: echo $SSH_CLIENT | awk '{print $1}'
+  register: ssh_client_ip_result
+
+- name: Set the SSH client IP address
+  ansible.builtin.set_fact:
+    ssh_client_ip: "{{ ssh_client_ip_result.stdout }}"
+
+
+- name: Configure nftables
+  ansible.builtin.template:
+    src: ./templates/nftables.rules.j2
+    dest: /etc/nftables.conf
+    owner: root
+    group: root
+    mode: u=rw,g=rw,o=r
+
+- name: Enable nftables service
+  ansible.builtin.service:
+    name: nftables
+    enabled: yes
+    state: started

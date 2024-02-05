@@ -1,0 +1,36 @@
+---
+- name: Limit SSH login attempts
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^MaxAuthTries"
+    line: "MaxAuthTries 3"
+
+# - name: Disable root login in SSH
+#   ansible.builtin.lineinfile:
+#     path: /etc/ssh/sshd_config
+#     regexp: "^PermitRootLogin"
+#     line: "PermitRootLogin no"
+
+- name: Set resource limits for all users
+  ansible.builtin.pam_limits:
+    domain: '*'
+    limit_type: '-'
+    limit_item: nproc
+    value: 100
+   
+- name: Harden network settings
+  ansible.builtin.lineinfile:
+    path: /etc/sysctl.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^net.ipv4.tcp_syncookies', line: 'net.ipv4.tcp_syncookies = 1' }
+    - { regexp: '^net.ipv4.conf.all.accept_redirects', line: 'net.ipv4.conf.all.accept_redirects = 0' }
+    - { regexp: '^net.ipv4.conf.all.send_redirects', line: 'net.ipv4.conf.all.send_redirects = 0' }
+    - { regexp: '^net.ipv4.conf.all.accept_source_route', line: 'net.ipv4.conf.all.accept_source_route = 0' }
+    - { regexp: '^net.ipv4.conf.all.rp_filter', line: 'net.ipv4.conf.all.rp_filter = 1' }
+    - { regexp: '^net.ipv6.conf.all.accept_redirects', line: 'net.ipv6.conf.all.accept_redirects = 0' }
+    - { regexp: '^net.ipv6.conf.all.accept_source_route', line: 'net.ipv6.conf.all.accept_source_route = 0' }
+
+- name: Apply sysctl settings
+  ansible.builtin.command: sysctl -p

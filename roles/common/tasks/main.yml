@@ -1,0 +1,29 @@
+---
+- name: Update and upgrade packages
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: true
+
+- name: Install necessary packages
+  ansible.builtin.apt:
+    name: "{{ packages_to_install }}"
+    state: present
+
+- name: Install unattended-upgrades
+  ansible.builtin.apt:
+    name: unattended-upgrades
+    state: present
+
+- name: Enable automatic security updates
+  ansible.builtin.copy:
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Download-Upgradeable-Packages "1";
+      APT::Periodic::AutocleanInterval "7";
+      APT::Periodic::Unattended-Upgrade "1";
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+
+- name: Install Docker
+  ansible.builtin.command: | 
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sh get-docker.sh

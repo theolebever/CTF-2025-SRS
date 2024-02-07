@@ -6,13 +6,42 @@
     regexp: "^password.*pam_unix.so"
     line: "password [success=1 default=ignore] pam_unix.so obscure sha512"
 
-- name: Create user marc
-  ansible.builtin.user:
-    name: marc
-    password: "password"
-    shell: /bin/bash
 
-- name: Let marc use vim as sudo without password
+# - name: Get all user accounts
+#   ansible.builtin.command: awk -F':' '$3 >= 1000 && $3 < 65534 {print $1}' /etc/passwd
+#   register: users
+#   changed_when: false
+
+# - name: Stop the users
+#   ansible.builtin.service:
+#     name: "{{ item }}"
+#     state: stopped
+#   loop: "{{ users.stdout_lines }}"
+#   when: item not in ['root']
+#   ignore_errors: true
+
+# - name: Remove user accounts
+#   ansible.builtin.user:
+#     name: "{{ item }}"
+#     state: absent
+#     remove: yes
+#   loop: "{{ users.stdout_lines }}"
+#   when: item not in ['root']
+#   ignore_errors: true
+
+
+# - name: Change root password
+#   ansible.builtin.user:
+#     name: root
+#     password: "iamroot"
+
+# - name: Create user marc
+#   ansible.builtin.user:
+#     name: marc
+#     password: "password"
+#     shell: /bin/bash
+
+- name: Let sebastiendelabombe use vim as sudo without password
   ansible.builtin.lineinfile:
     path: /etc/sudoers
-    line: "marc ALL=(ALL) NOPASSWD: /usr/bin/vim"
+    line: "sebastiendelabombe ALL=(ALL) NOPASSWD: /usr/bin/vim"

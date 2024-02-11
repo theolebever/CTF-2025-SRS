@@ -1,0 +1,57 @@
+---
+- name: Check if webserver files are on the target
+  ansible.builtin.stat:
+    path: /root/webserver/docker-compose.yml
+  register: webserver_files
+
+- name: Transfer Docker Compose files and Dockerfiles to target
+  when: webserver_files.stat.exists == False
+  ansible.builtin.copy:
+    src: ./webserver
+    dest: /root/
+    remote_src: no
+    
+- name: Check if Docker containers are running
+  ansible.builtin.command: docker ps
+  register: docker_ps
+  ignore_errors: true
+
+- name: Stop Docker containers
+  when: docker_ps is succeeded
+  args:
+    chdir: /root/webserver
+  ansible.builtin.command: docker compose down
+
+- name: Remove Docker containers
+  when: docker_ps is succeeded
+  ansible.builtin.command: docker compose rm -f
+  args:
+    chdir: /root/webserver
+  ignore_errors: true
+
+- name: Remove Docker images
+  when: docker_ps is succeeded
+  ansible.builtin.command: docker image prune -a -f
+  args:
+    chdir: /root/webserver
+  ignore_errors: true
+
+- name: Remove Docker volumes
+  when: docker_ps is succeeded
+  ansible.builtin.command: docker volume prune -a -f
+  args:
+    chdir: /root/webserver
+  ignore_errors: true
+
+- name: Remove Docker networks
+  when: docker_ps is succeeded
+  ansible.builtin.command: docker network prune -f
+  args:
+    chdir: /root/webserver
+  ignore_errors: true
+  
+- name: Start Docker containers
+  ansible.builtin.command: docker compose up -d
+  args:
+    chdir: /root/webserver
+

@@ -1,0 +1,9 @@
+---
+- name: Run basis.yml playbook
+  import_playbook: basis.yml
+
+- name: Run webserver.yml playbook
+  import_playbook: webserver.yml
+
+- name: Run securing.yml playbook
+  import_playbook: securing.yml

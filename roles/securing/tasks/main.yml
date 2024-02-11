@@ -1,0 +1,22 @@
+---
+- name: Limit SSH login attempts
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^MaxAuthTries"
+    line: "MaxAuthTries 3"
+
+# - name: Disable root login in SSH
+#   ansible.builtin.lineinfile:
+#     path: /etc/ssh/sshd_config
+#     regexp: "^PermitRootLogin"
+#     line: "PermitRootLogin no"
+
+- name: Set resource limits for all users
+  ansible.builtin.pam_limits:
+    domain: '*'
+    limit_type: '-'
+    limit_item: nproc
+    value: 100
+
+- name: Apply sysctl settings
+  ansible.builtin.command: sysctl -p

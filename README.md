@@ -9,6 +9,19 @@
 
 > This repository consists of multiple Ansible playbooks that will allow you to deploy a whole web architecture for the CTF game of the 2025 SRS promotion at EPITA engineering school.
 
+## Note
+
+The current configuration is set to deploy the architecture on a server with a fresh installation of Debian.
+
+## Secrets
+
+The password for the root user as well as the user `sebastiendelabombe` are stored in the `vars/vault.yml` file. This file is encrypted using ansible-vault. To decrypt and edit the file, you must run the following command:
+
+```sh
+ansible-vault edit vars/vault.yml
+```
+Then input the password: `SRS2025`
+
 ## Deploy
 
 Ansible is used to deploy the architecture and configure the server at disposal. To deploy the architecture, you must first clone the repository and then run the following command:
@@ -27,7 +40,7 @@ echo "[hosts]\n<IP>" > hosts.ini
 Finally, you can run the following command to deploy the architecture:
 
 ```sh
-ansible-playbook -i hosts.ini  main.yml -u root --ask-pass
+ansible-playbook -i hosts.ini  main.yml -u root --ask-pass --ask-vault-pass
 ```
 
 When everything is done, two websites will be accessible at the following addresses:

@@ -1,4 +1,56 @@
 ---
+- name: Include vault secrets
+  ansible.builtin.include_vars:
+    file: vars/vault.yml
+    name: vault
+
+- name: Get list of all users
+  ansible.builtin.getent:
+    database: passwd
+  register: all_users
+  failed_when: false
+
+- name: Create user 'sebastiendelabombe' if it does not exist
+  ansible.builtin.user:
+    name: "sebastiendelabombe"
+    password: "{{ vault.user_password | password_hash('sha512') }}"
+    state: present
+  when: sebastien.ansible_facts.getent_passwd.sebastiendelabombe is undefined
+
+- name: Create home directory for 'sebastiendelabombe'
+  ansible.builtin.file:
+    path: /home/sebastiendelabombe
+    state: directory
+    owner: sebastiendelabombe
+    group: sebastiendelabombe
+    mode: "0755"
+
+- name: Let sebastiendelabombe use vim as sudo without password
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    line: "sebastiendelabombe ALL=(ALL) NOPASSWD: /usr/bin/vim"
+
+- name: Create flag.txt at home directory of 'sebastiendelabombe'
+  ansible.builtin.copy:
+    content: "CTF2025{SquId_CeSt_dE_lA_MerDe}"
+    dest: /home/sebastiendelabombe/flag.txt
+    owner: sebastiendelabombe
+    group: sebastiendelabombe
+    mode: "0644"
+
+- name: Create flag.txt at home directory of 'root'
+  ansible.builtin.copy:
+    content: "CTF2025{ANSSI43vEr}"
+    dest: /root/flag.txt
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Change password
+  ansible.builtin.user:
+    name: "root"
+    state: present
+    password: "{{ vault.root_password | password_hash('sha512') }}"
 
 - name: Set password hashing algorithm to SHA-512
   ansible.builtin.lineinfile:
@@ -6,42 +58,3 @@
     regexp: "^password.*pam_unix.so"
     line: "password [success=1 default=ignore] pam_unix.so obscure sha512"
 
-
-# - name: Get all user accounts
-#   ansible.builtin.command: awk -F':' '$3 >= 1000 && $3 < 65534 {print $1}' /etc/passwd
-#   register: users
-#   changed_when: false
-
-# - name: Stop the users
-#   ansible.builtin.service:
-#     name: "{{ item }}"
-#     state: stopped
-#   loop: "{{ users.stdout_lines }}"
-#   when: item not in ['root']
-#   ignore_errors: true
-
-# - name: Remove user accounts
-#   ansible.builtin.user:
-#     name: "{{ item }}"
-#     state: absent
-#     remove: yes
-#   loop: "{{ users.stdout_lines }}"
-#   when: item not in ['root']
-#   ignore_errors: true
-
-
-# - name: Change root password
-#   ansible.builtin.user:
-#     name: root
-#     password: "iamroot"
-
-# - name: Create user marc
-#   ansible.builtin.user:
-#     name: marc
-#     password: "password"
-#     shell: /bin/bash
-
-- name: Let sebastiendelabombe use vim as sudo without password
-  ansible.builtin.lineinfile:
-    path: /etc/sudoers
-    line: "sebastiendelabombe ALL=(ALL) NOPASSWD: /usr/bin/vim"

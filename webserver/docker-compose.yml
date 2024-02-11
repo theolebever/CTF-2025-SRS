@@ -15,8 +15,6 @@ services:
   cmsmadesimple:
     container_name: cmsmadesimple
     build: CMSmadesimple/.
-    ports:
-      - "8000:8000"
     depends_on:
       - mysqlcms
     networks:
@@ -30,8 +28,6 @@ services:
       context: vitrine/.
     environment:
       NODE_ENV: production
-    ports:
-      - "10000:10000"
     networks:
       - backend
 

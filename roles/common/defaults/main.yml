@@ -6,5 +6,7 @@ packages_to_install:
   - nftables
   - python3
   - python3-venv
+  - python3-pip
+  - ca-certificates
   - virtualenv
   - curl

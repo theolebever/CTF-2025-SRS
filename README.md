@@ -33,7 +33,7 @@ sudo apt install ansible
 Then you can set the IP of the server in the `hosts.ini` file as follows:
 
 ```sh
-echo "[hosts]\n<IP>" > hosts.ini
+echo -e "[hosts]\n<IP>" > hosts.ini
 
 ```
 
